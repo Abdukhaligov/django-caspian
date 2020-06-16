@@ -27,21 +27,20 @@ class Degree(models.Model):
         return self.name
 
 
-class Membership(models.Model):
-    name = models.CharField(max_length=128)
-    reporter = models.BooleanField(default=0)
-
-    def __str__(self):
-        return self.name
-
-
 class User(models.Model):
+    def avatar_tag(self):
+        from django.utils.html import escape
+        return u'<img src="%s" />' % escape(self.avatar.url)
+    avatar_tag.short_description = 'Image'
+    avatar_tag.allow_tags = True
+
     class Rank(models.TextChoices):
         NOT = '0', 'Not in Committee'
         FIRST = '1', 'First'
         SECOND = '2', 'Second'
         THIRD = '3', 'Third'
 
+    avatar = models.ImageField(blank=True, null=True, upload_to='avatars')
     reference = models.ForeignKey(Reference, on_delete=models.SET_NULL, blank=True, null=True)
     degree = models.ForeignKey(Degree, on_delete=models.SET_NULL, blank=True, null=True)
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, blank=True, null=True)
@@ -60,62 +59,19 @@ class User(models.Model):
 
     # m)	links: json or text, nullable
 
-
-class Event(models.Model):
-    name = models.CharField(max_length=128, blank=True, null=True)
-    description = models.CharField(max_length=256, blank=True, null=True)
-    address = models.CharField(max_length=256, blank=True, null=True)
-    date = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField(default=0)
-
-    # f)    days: json or text
-    # i)    user: belongs_to, nullable, on
-    # delete = Set Null
-    # ii)    name: string
-    # iii)    description: text, nullable
-    # iv)    date: date
-    # v)    start: time, nullable
-    # vi)    end: time, nullable
-    # vii)    address: string, nullable
-    # viii)    picture: string(path
-    # to
-    # file), nullable
-
     def __str__(self):
         return self.name
 
 
-class Topic(models.Model):
+class Sponsor(models.Model):
+    degree = models.ForeignKey(Degree, on_delete=models.SET_NULL, blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)
-    description = models.CharField(max_length=256, blank=True, null=True)
-    topic = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True, related_name='children')
+    description = models.CharField(max_length=512, blank=True, null=True)
+    company = models.CharField(max_length=128, blank=True, null=True)
+    position = models.CharField(max_length=128, blank=True, null=True)
+
+    # f)    links: json or text, nullable
 
     def __str__(self):
         return self.name
 
-
-# Sponsor Class
-
-
-class UserMembership(models.Model):
-    class Status(models.TextChoices):
-        PENDING = '1', 'Pending'
-        REJECTED = '2', 'Rejected'
-        APPROVED = '3', 'Approved'
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    membership = models.ForeignKey(Membership, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    status = models.CharField(
-        max_length=1,
-        choices=Status.choices,
-        default=Status.PENDING,
-    )
-
-# a)    event: belongs_to, on
-# delete = CASCADE
-# b)    user: belongs_to, on
-# delete = CASCADE
-# c)    membership: belongs_to, on
-# delete = CASCADE
-# d)    status: enum[1, 2, 3], default = 1

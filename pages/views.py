@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 
-from caspian.models import *
+from accounts.models import *
 
 
 def index(request):

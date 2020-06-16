@@ -2,10 +2,9 @@ from django.core.handlers.base import logger
 from django.core.management.base import BaseCommand
 import random
 from faker import Faker
-
 from django.db import connection
-
-from caspian.models import *
+from accounts.models import *
+from events.models import *
 
 MODE_REFRESH = 'refresh'
 
