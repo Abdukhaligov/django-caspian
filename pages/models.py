@@ -2,6 +2,10 @@ from django.db import models
 
 
 class News(models.Model):
+    class Meta:
+        verbose_name = 'News'
+        verbose_name_plural = 'News'
+
     title = models.CharField(max_length=128)
     body = models.TextField()
 

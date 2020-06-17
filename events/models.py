@@ -73,7 +73,7 @@ class Report(models.Model):
     topic = models.ForeignKey(Topic, blank=True, null=True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=128, blank=True, null=True)
     description = models.CharField(max_length=256, blank=True, null=True)
-    # file = models.CharField(max_length=256, blank=True, null=True)
+    file = models.FileField(blank=True, null=True, upload_to='reports')
     status = models.CharField(
         max_length=1,
         choices=Status.choices,
@@ -102,8 +102,7 @@ class Voucher(models.Model):
 class Document(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     voucher = models.ForeignKey(Voucher, on_delete=models.CASCADE)
-
-    # file = models.FilePathField(blank=True, null=True)
+    file = models.FileField(blank=True, null=True, upload_to='documents')
 
     def __str__(self):
         return str(self.id)

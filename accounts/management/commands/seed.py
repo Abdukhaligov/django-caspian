@@ -1,3 +1,5 @@
+import glob
+import os
 from django.core.handlers.base import logger
 from django.core.management.base import BaseCommand
 import random
@@ -5,9 +7,9 @@ from faker import Faker
 from django.db import connection
 from accounts.models import *
 from events.models import *
+from django.contrib.auth.models import User as Auth
 
 MODE_REFRESH = 'refresh'
-
 MODE_CLEAR = 'clear'
 
 
@@ -596,12 +598,6 @@ def create_events():
 
 
 def run_seed(self, mode):
-    """ Seed database based on mode
-        :param self:
-        :param mode: refresh / clear
-        :return:
-        """
-    # Clear data from tables
     reset_and_alter_table(Degree)
     reset_and_alter_table(Reference)
     reset_and_alter_table(Region)
@@ -609,6 +605,7 @@ def run_seed(self, mode):
     reset_and_alter_table(Topic)
     reset_and_alter_table(Membership)
     reset_and_alter_table(Event)
+    reset_and_alter_table(Auth)
 
     if mode == MODE_CLEAR:
         return
@@ -620,3 +617,9 @@ def run_seed(self, mode):
     create_topics()
     create_memberships()
     create_events()
+
+    admin = Auth.objects.create_user('admin', 'admin@example.com', 'admin')
+    admin.is_staff = 1
+    admin.is_superuser = 1
+
+    admin.save()

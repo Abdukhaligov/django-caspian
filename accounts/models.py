@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.safestring import mark_safe
 
 
 class Region(models.Model):
@@ -29,8 +30,8 @@ class Degree(models.Model):
 
 class User(models.Model):
     def avatar_tag(self):
-        from django.utils.html import escape
-        return u'<img src="%s" />' % escape(self.avatar.url)
+        return mark_safe('<img src="%s" width="150" height="150" />' % self.avatar.url)
+
     avatar_tag.short_description = 'Image'
     avatar_tag.allow_tags = True
 
