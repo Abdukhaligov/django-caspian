@@ -7,18 +7,18 @@ class UserMembershipInLine(admin.TabularInline):
     extra = 0
 
 
+@admin.register(Membership)
 class MembershipAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'reporter')
     inlines = [UserMembershipInLine]
 
 
+@admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'address', 'date', 'active')
     inlines = [UserMembershipInLine]
 
 
-admin.site.register(Membership, MembershipAdmin)
-admin.site.register(Event, EventAdmin)
 admin.site.register(Topic)
 admin.site.register(Report)
 admin.site.register(Voucher)

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.safestring import mark_safe
 
@@ -28,7 +29,7 @@ class Degree(models.Model):
         return self.name
 
 
-class User(models.Model):
+class Profile(models.Model):
     def avatar_tag(self):
         return mark_safe('<img src="%s" width="150" height="150" />' % self.avatar.url)
 
@@ -40,14 +41,12 @@ class User(models.Model):
         FIRST = '1', 'First'
         SECOND = '2', 'Second'
         THIRD = '3', 'Third'
-
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(blank=True, null=True, upload_to='avatars')
     reference = models.ForeignKey(Reference, on_delete=models.SET_NULL, blank=True, null=True)
     degree = models.ForeignKey(Degree, on_delete=models.SET_NULL, blank=True, null=True)
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, blank=True, null=True)
-    name = models.CharField(max_length=128, blank=True, null=True)
     description = models.CharField(max_length=512, blank=True, null=True)
-    email = models.EmailField(unique=True)
     phone = models.CharField(max_length=128, blank=True, null=True)
     company = models.CharField(max_length=128, blank=True, null=True)
     position = models.CharField(max_length=128, blank=True, null=True)
@@ -59,9 +58,6 @@ class User(models.Model):
     )
 
     # m)	links: json or text, nullable
-
-    def __str__(self):
-        return self.name
 
 
 class Sponsor(models.Model):

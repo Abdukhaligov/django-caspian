@@ -5,9 +5,9 @@ from django.core.management.base import BaseCommand
 import random
 from faker import Faker
 from django.db import connection
-from accounts.models import *
-from events.models import *
-from django.contrib.auth.models import User as Auth
+from account.models import *
+from event.models import *
+from django.contrib.auth.models import User
 
 MODE_REFRESH = 'refresh'
 MODE_CLEAR = 'clear'
@@ -513,8 +513,6 @@ def create_references():
 
 
 def create_users():
-    users = []
-
     for x in range(68):
         if x < 3:
             rank = 1
@@ -525,22 +523,20 @@ def create_users():
         else:
             rank = 0
 
-        users.append(
-            User(
-                name=Faker().name(),
-                description=Faker().paragraph(),
-                email=Faker().safe_email(),  # Uncomment email field into Models
-                company=Faker().company(),
-                position=Faker().job(),
-                phone="994" + random.choice(["55", "50", "51", "70", "77"]) + str(random.randint(1234567, 9876532)),
-                reference=random.choice(Reference.objects.all()),
-                degree=random.choice(Degree.objects.all()),
-                region=Region.objects.get(id=20),
-                rank=rank
-            ),
-        )
+        email = Faker().safe_email()
+        user = User.objects.create_user(email, email, '123456')
 
-    enter_seeds(User, users)
+        Profile(
+            user=user,
+            description=Faker().paragraph(),
+            company=Faker().company(),
+            position=Faker().job(),
+            phone="994" + random.choice(["55", "50", "51", "70", "77"]) + str(random.randint(1234567, 9876532)),
+            reference=random.choice(Reference.objects.all()),
+            degree=random.choice(Degree.objects.all()),
+            region=Region.objects.get(id=20),
+            rank=rank
+        ).save(),
 
 
 def create_topics():
@@ -605,10 +601,17 @@ def run_seed(self, mode):
     reset_and_alter_table(Topic)
     reset_and_alter_table(Membership)
     reset_and_alter_table(Event)
-    reset_and_alter_table(Auth)
+    reset_and_alter_table(User)
+    reset_and_alter_table(Profile)
 
     if mode == MODE_CLEAR:
         return
+
+    admin = User.objects.create_user('admin', 'admin@example.com', 'admin')
+    admin.is_staff = 1
+    admin.is_superuser = 1
+    admin.save()
+    Profile(user=admin, ).save(),
 
     create_degrees()
     create_references()
@@ -617,9 +620,3 @@ def run_seed(self, mode):
     create_topics()
     create_memberships()
     create_events()
-
-    admin = Auth.objects.create_user('admin', 'admin@example.com', 'admin')
-    admin.is_staff = 1
-    admin.is_superuser = 1
-
-    admin.save()

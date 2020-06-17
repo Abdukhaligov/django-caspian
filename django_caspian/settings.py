@@ -36,10 +36,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'accounts.apps.AccountsConfig',
-    'events.apps.EventsConfig',
-    'pages.apps.PagesConfig',
+    'account.apps.AccountConfig',
+    'event.apps.EventConfig',
+    'page.apps.PageConfig',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
